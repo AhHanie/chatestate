@@ -1,4 +1,4 @@
-from openai import OpenAI
+from openai import AzureOpenAI
 import os
 import json
 from django.core.exceptions import ValidationError
@@ -10,7 +10,7 @@ from .models import Estate
 
 class RealEstateQueryProcessor:
     def __init__(self):
-        self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+        self.client = AzureOpenAI()
         self.estate_service = ServiceProvider.get_service(EstateService)
 
     def _get_filters_from_query(self, query: str) -> dict:
@@ -28,7 +28,8 @@ class RealEstateQueryProcessor:
 
         # Send query to OpenAI API
         response = self.client.chat.completions.create(
-            model="gpt-4-0125-preview",  # Using GPT-4 for better understanding
+            # Using GPT-4 for better understanding
+            model=os.getenv('AZURE_OPENAI_DEPLOYMENT'),
             messages=[
                 {
                     "role": "user",
@@ -47,13 +48,12 @@ class RealEstateQueryProcessor:
         except json.JSONDecodeError:
             raise ValueError("Failed to parse AI-generated filters")
 
-    def _generate_property_summary(self, properties: list, query: str) -> str:
+    def _generate_property_summary(self, properties: list) -> str:
         """
         Generate a natural language summary of matching properties using ChatGPT.
 
         Args:
             properties: List of matching Estate objects
-            query: Original user query
 
         Returns:
             str: Generated summary
@@ -69,7 +69,8 @@ class RealEstateQueryProcessor:
 
         # Send to OpenAI API
         response = self.client.chat.completions.create(
-            model="gpt-4-0125-preview",  # Using GPT-4 for better quality summaries
+            # Using GPT-4 for better quality summaries
+            model=os.getenv('AZURE_OPENAI_DEPLOYMENT'),
             messages=[
                 {
                     "role": "user",
@@ -109,7 +110,7 @@ class RealEstateQueryProcessor:
                 }
 
             # Generate summary
-            summary = self._generate_property_summary(properties, query)
+            summary = self._generate_property_summary(properties)
 
             # Prepare response
             return {

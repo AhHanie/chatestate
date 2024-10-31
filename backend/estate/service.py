@@ -1,4 +1,4 @@
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List
 from datetime import datetime
 import pandas as pd
 import re
@@ -49,12 +49,6 @@ class EstateService:
                 new_type = Types(type=t['type'], value=t['value'])
                 new_type.save()
 
-        allTypes = Types.objects.all()
-        di = {}
-        for t in allTypes:
-            if t.type == ESTATE_TYPE:
-                di[t.value] = t.id
-
     def validate_filters(self, filters: Dict[str, Any]) -> None:
         """
         Validates estate filters using the EstateFilterValidator.
@@ -82,7 +76,8 @@ class EstateService:
         estate_types = Types.objects.filter(type=ESTATE_TYPE)
 
         three_bedroom_type = first(bedroom_types, lambda x: x.value == '3')
-        dubai_city_type = first(city_types, lambda x: x.value == 'Dubai')
+        abu_dhabi_city_type = first(
+            city_types, lambda x: x.value == 'Abu Dhabi')
         villa_estate_type = first(estate_types, lambda x: x.value == 'villa')
 
         return f"""
@@ -110,13 +105,13 @@ class EstateService:
         Example: Input: “Find me a 3-bedroom villa in Abu Dhabi.”
 
         Output: {{"bedrooms": {three_bedroom_type.id}, "city": {
-            dubai_city_type.id}, "type": {villa_estate_type.id}}}
+            abu_dhabi_city_type.id}, "type": {villa_estate_type.id}}}
 
         User Query: {query}
         """
 
-    def get_summary_ai_prompt():
-        return 'You are a real estate agent. Given a JSON dataset of real estate properties, create a well-organized summary of the properties to present to a customer. Focus on clarity and professionalism, highlighting key details like property type, location, price, size, and unique features. Ensure the summary is concise, visually clean, and customer-friendly.'
+    def get_summary_ai_prompt(self):
+        return 'You are a real estate agent. Given a JSON dataset of real estate properties, create a well-organized summary of the properties to present to a customer. Focus on clarity and professionalism, highlighting key details like property type, location, price, size, and unique features. Ensure the summary is short, concise, visually clean, and customer-friendly.'
 
     @staticmethod
     def _convert_to_boolean(value) -> bool:

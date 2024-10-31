@@ -25,9 +25,12 @@ A Django-based backend service that provides intelligent real estate property ma
 
 ## 🔧 Installation
 
-1. Create a `.env` file in the project root and add your OpenAI API key:
+1. Create a `.env` file in the project root and add your environment variables:
 ```env
-OPENAI_API_KEY=your_api_key_here
+AZURE_OPENAI_API_KEY=your-api-key-here
+OPENAI_API_VERSION=your-model-here
+AZURE_OPENAI_ENDPOINT=your-endpoint-here
+AZURE_OPENAI_DEPLOYMENT=your-deployment-here
 ```
 
 2. Generate migrations for application:

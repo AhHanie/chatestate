@@ -6,6 +6,7 @@ from django.views.decorators.http import require_http_methods
 import re
 import math
 import json
+import traceback
 
 from .constants import *
 from common.utils import first
@@ -140,6 +141,7 @@ def process_nlp_query(request):
             "error": "Invalid JSON in request body"
         }, status=400)
     except Exception as e:
+        traceback.print_exc()
         return JsonResponse({
             "success": False,
             "error": f"Server error: {str(e)}"
